@@ -33,6 +33,17 @@ async function _getIngredientsForCocktailDB(cocktail_id) {
   return result.rows;
 }
 
+async function _getEquipmentsForCocktailDB(cocktail_id) {
+  const result = await query('SELECT i.id, i.title FROM equipments i JOIN cocktailsEquipments c ON i.id = c.equipment_id AND c.cocktail_id = $1;', [cocktail_id]);
+  return result.rows;
+}
+
+
+async function _getCocktailAuthor(cocktail_id) {
+  const result = await query('SELECT user_id FROM usersCocktails WHERE cocktail_id=$1;', [cocktail_id]);
+  return result.rows[0];
+}
+
 async function withMulter(req, res, next, fn) {
   multer({ dest: './temp' })
     .single('image')(req, res, (err) => {
@@ -58,10 +69,14 @@ async function withMulter(req, res, next, fn) {
 
 async function getCocktailDB(id) {
     const ingredients = await _getIngredientsForCocktailDB(id);
+    const equipments = await _getEquipmentsForCocktailDB(id);
+    const author = await _getCocktailAuthor(id);
 
     const result = await query('SELECT * FROM cocktails WHERE id=$1;', [id]);
     let cocktail = result.rows[0];
+    cocktail.author = author;
     cocktail.ingredients = ingredients;
+    cocktail.equipments = equipments;
     return cocktail;
 }
 
@@ -89,14 +104,18 @@ async function getAllCocktails(req, res) {
 //    POST
 // ==========
 
-async function createCocktailDB(userID, title, instructions, cocktailIngredients, image, type, difficulty) {
+async function createCocktailDB(userID, title, instructions, about_cocktail, cocktailIngredients, cocktailEquipments, image, type, difficulty) {
 
-    const result = await query('INSERT INTO cocktails (title, instructions, imageURL, cocktail_type, difficulty) VALUES ($1, $2, $3, $4, $5) RETURNING *;', [title, instructions, image, type, difficulty]);
+    const result = await query('INSERT INTO cocktails (title, instructions, about_cocktail, imageURL, cocktail_type, difficulty) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;', [title, instructions, about_cocktail, image, type, difficulty]);
     const cocktail = result.rows[0];
 
     for (let i=0; i<cocktailIngredients.length; i++) {
         await query('INSERT INTO cocktailsIngredients (cocktail_id, ingredient_id, quantity) VALUES ($1, $2, $3);', [cocktail.id, cocktailIngredients[i].id, cocktailIngredients[i].quantity]);
     }
+
+    for (let i=0; i<cocktailEquipments.length; i++) {
+      await query('INSERT INTO cocktailsEquipments (cocktail_id, equipment_id) VALUES ($1, $2);', [cocktail.id, cocktailEquipments[i].id]);
+  }
     
     await query('INSERT INTO usersCocktails (user_id, cocktail_id) VALUES ($1, $2);', [userID, cocktail.id]);
 
@@ -105,7 +124,7 @@ async function createCocktailDB(userID, title, instructions, cocktailIngredients
 
 async function _uploadCocktailImage(req, res) {
   // file er tómt ef engri var uploadað
-  const { file: { path, mimetype } = {} } = req;
+  const { file: { path, mimetype, author } = {} } = req;
 
   const hasImage = Boolean(path && mimetype);
 
@@ -160,12 +179,13 @@ async function _uploadCocktailImage(req, res) {
 
   res.json({
     url: upload.secure_url,
+    user: req.user,
   });
 }
 
 async function createCocktail(req, res) {
   const body = req.body;
-  const cocktail = await createCocktailDB(req.user.id, body.title, body.instructions, body.ingredients, body.image, body.type, body.difficulty);
+  const cocktail = await createCocktailDB(req.user.id, body.title, body.instructions, body.about_cocktail, body.ingredients, body.equipments, body.image, body.type, body.difficulty);
   res.json(cocktail);
 }
 

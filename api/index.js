@@ -8,7 +8,7 @@ const requireAdmin = [
 ];
 
 const { 
-  getCocktail, 
+  getCocktail,
   createCocktail, 
   getAllCocktails,
   uploadCocktailImage,
@@ -19,6 +19,12 @@ const {
   createIngredient,
   getAllIngredients
 } = require('./ingredients');
+
+const {
+  getEquipment,
+  createEquipment,
+  getAllEquipments,
+} = require('./equipments');
   
 const { 
   getUser, 
@@ -36,6 +42,10 @@ router.post('/cocktails/upload', requireAuth, catchErrors(uploadCocktailImage));
 router.get('/ingredients/:id', catchErrors(getIngredient));
 router.post('/ingredients', catchErrors(createIngredient));
 router.get('/ingredients', catchErrors(getAllIngredients));
+
+router.get('/equipments/:id', catchErrors(getEquipment));
+router.post('/equipments', catchErrors(createEquipment));
+router.get('/equipments', catchErrors(getAllEquipments));
 
 router.get('/users', catchErrors(getAllUsers));
 router.get('/users/me', requireAuth, catchErrors(getUser));

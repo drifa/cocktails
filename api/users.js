@@ -1,5 +1,5 @@
 const { query } = require('../utils/db');
-const { getCocktailDB: getCocktail } = require('./cocktails')
+const { getCocktailDB: getCocktail } = require('./cocktails');
 
 // =========
 //    GET
@@ -12,6 +12,8 @@ async function getUsersCocktailsDB(user_id) {
 async function getUserDB(id) {
   const cocktailsResult = await getUsersCocktailsDB(id);
   const cocktailIDs = cocktailsResult.rows.map(result => result.cocktail_id);
+
+  console.log(typeof getCocktail);
 
   const cocktails = await Promise.all(cocktailIDs.map(id => getCocktail(id)));
   const result = await query('SELECT * FROM users WHERE id=$1;', [id]);
@@ -55,6 +57,7 @@ async function createUser(req, res) {
 
 module.exports = {
     getUser,
+    getUserDB,
     createUser,
     getAllUsers,
 };

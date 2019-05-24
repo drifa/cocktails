@@ -1,0 +1,15 @@
+INSERT INTO equipments (title) VALUES ('Knife');
+INSERT INTO equipments (title) VALUES ('Shaker');
+INSERT INTO equipments (title) VALUES ('Jigger');
+INSERT INTO equipments (title) VALUES ('Strainer');
+INSERT INTO equipments (title) VALUES ('Bar Spoon');
+INSERT INTO equipments (title) VALUES ('Muddler');
+INSERT INTO equipments (title) VALUES ('Citrus Juicer');
+INSERT INTO equipments (title) VALUES ('Channel Knife');
+INSERT INTO equipments (title) VALUES ('Martini Glass');
+INSERT INTO equipments (title) VALUES ('White Wine Glass');
+INSERT INTO equipments (title) VALUES ('Red Wine Glass');
+INSERT INTO equipments (title) VALUES ('Whiskey glass');
+INSERT INTO equipments (title) VALUES ('Copper Mug');
+INSERT INTO equipments (title) VALUES ('Glass');
+INSERT INTO equipments (title) VALUES ('Straw');

@@ -16,14 +16,14 @@ async function main() {
     console.info(`Set upp gagnagrunn á ${databaseUrl}`);
   
     // henda töflum
-    try {
-      const createTable = await readFileAsync('./sql/drop.sql');
-      await query(createTable.toString('utf8'));
-      console.info('Töflum hent');
-    } catch (e) {
-      console.error('Villa við að henda töflum:', e.message);
-      return;
-    }
+    // try {
+    //   const createTable = await readFileAsync('./sql/drop.sql');
+    //   await query(createTable.toString('utf8'));
+    //   console.info('Töflum hent');
+    // } catch (e) {
+    //   console.error('Villa við að henda töflum:', e.message);
+    //   return;
+    // }
   
     // búa til töflur út frá skema
     try {
@@ -39,9 +39,20 @@ async function main() {
     try {
       const createData = await readFileAsync('./sql/insert-ingredients.sql');
       await query(createData.toString('utf8'));
-      console.info('Notendur búnir til');
+      console.info('Ingredients búnir til');
     } catch (e) {
       console.error('Villa við að búa til hráefni:', e.message);
+      return;
+    }
+
+    // búa til equipments
+
+    try {
+      const createData = await readFileAsync('./sql/insert-equipments.sql');
+      await query(createData.toString('utf8'));
+      console.info('Equipments búnir til');
+    } catch (e) {
+      console.error('Villa við að búa til equipments:', e.message);
       return;
     }
   
